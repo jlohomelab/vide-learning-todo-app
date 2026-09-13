@@ -2,8 +2,6 @@
 
 A clean, corporate-styled task manager built with vanilla HTML/CSS/JS and a Node.js backend. Inspired by the Palo Alto Networks design language.
 
-![UI preview: PAN-branded nav bar, task list with priority badges and category tags, dark/light toggle](https://raw.githubusercontent.com/jlohomelab/vide-learning-todo-app/master/preview.png)
-
 ---
 
 ## Features
