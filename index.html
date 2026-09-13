@@ -47,7 +47,7 @@
 
     /* ── Smooth theme transition ── */
     body, .card, .card-body, .card-footer,
-    .input-row input, .filter-btn, .todo-item, .filters {
+    .input-row input, .task-options input, .filter-btn, .todo-item, .filters {
       transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
 
@@ -73,13 +73,7 @@
       flex-shrink: 0;
     }
 
-    .topbar-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
+    .topbar-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .topbar-logo svg { flex-shrink: 0; }
 
     .topbar-brand {
@@ -90,28 +84,15 @@
     }
 
     .topbar-divider {
-      width: 1px;
-      height: 20px;
+      width: 1px; height: 20px;
       background: rgba(255,255,255,.25);
-      margin: 0 4px;
-      flex-shrink: 0;
+      margin: 0 4px; flex-shrink: 0;
     }
 
-    .topbar-app {
-      color: rgba(255,255,255,.75);
-      font-size: 0.875rem;
-    }
-
-    /* push controls to the right */
+    .topbar-app { color: rgba(255,255,255,.75); font-size: 0.875rem; }
     .topbar-spacer { flex: 1; }
+    .topbar-controls { display: flex; align-items: center; gap: 4px; }
 
-    .topbar-controls {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Language toggle */
     .lang-btn {
       background: none;
       border: 1px solid rgba(255,255,255,.35);
@@ -125,20 +106,16 @@
       letter-spacing: 0.02em;
     }
 
-    .lang-btn:hover      { background: rgba(255,255,255,.12); color: #fff; }
-    .lang-btn.active     { background: rgba(255,255,255,.2); color: #fff; border-color: rgba(255,255,255,.7); }
+    .lang-btn:hover  { background: rgba(255,255,255,.12); color: #fff; }
+    .lang-btn.active { background: rgba(255,255,255,.2); color: #fff; border-color: rgba(255,255,255,.7); }
 
-    /* Theme toggle */
     .theme-btn {
       background: none;
       border: 1px solid rgba(255,255,255,.35);
       border-radius: 4px;
       color: rgba(255,255,255,.8);
-      width: 30px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 30px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
       margin-left: 6px;
@@ -147,11 +124,7 @@
     .theme-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
 
     /* ── Main card ── */
-    .wrapper {
-      width: 100%;
-      max-width: 560px;
-      padding: 36px 16px 48px;
-    }
+    .wrapper { width: 100%; max-width: 580px; padding: 36px 16px 48px; }
 
     .card {
       background: var(--surface);
@@ -179,20 +152,16 @@
 
     [data-theme="dark"] header h1 { color: #58A6FF; }
 
-    header p {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
+    header p { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 4px; }
 
     /* ── Input row ── */
     .input-row {
       display: flex;
       gap: 8px;
-      margin-bottom: 24px;
+      margin-bottom: 10px;
     }
 
-    .input-row input {
+    .input-row input, .cat-input {
       flex: 1;
       background: var(--surface);
       border: 1.5px solid var(--border);
@@ -204,16 +173,18 @@
       transition: border-color 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
     }
 
-    .input-row input:focus {
+    .input-row input:focus, .cat-input:focus {
       border-color: var(--border-focus);
       box-shadow: 0 0 0 3px rgba(0,93,170,.15);
     }
 
-    [data-theme="dark"] .input-row input:focus {
+    [data-theme="dark"] .input-row input:focus,
+    [data-theme="dark"] .cat-input:focus {
       box-shadow: 0 0 0 3px rgba(88,166,255,.15);
     }
 
-    .input-row input::placeholder { color: var(--text-secondary); }
+    .input-row input::placeholder,
+    .cat-input::placeholder { color: var(--text-secondary); }
 
     .btn-add {
       background: var(--pan-orange);
@@ -231,10 +202,52 @@
     .btn-add:hover  { background: #e04a22; }
     .btn-add:active { transform: scale(0.97); }
 
+    /* ── Task options row (priority + category for new task) ── */
+    .task-options {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .pri-selector {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .pri-select-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pri-select-btn:hover { border-color: var(--pan-blue-mid); color: var(--pan-blue); }
+    .pri-select-btn.none.active { background: var(--pan-blue-light); border-color: var(--pan-blue-mid); color: var(--pan-blue); }
+    .pri-select-btn.high.active   { background: #FEE2E2; border-color: #DC2626; color: #DC2626; }
+    .pri-select-btn.medium.active { background: #FEF3C7; border-color: #D97706; color: #D97706; }
+    .pri-select-btn.low.active    { background: #DCFCE7; border-color: #16A34A; color: #16A34A; }
+
+    [data-theme="dark"] .pri-select-btn.high.active   { background: #3B0A0A; border-color: #F85149; color: #FCA5A5; }
+    [data-theme="dark"] .pri-select-btn.medium.active { background: #2A1800; border-color: #F0A500; color: #FCD34D; }
+    [data-theme="dark"] .pri-select-btn.low.active    { background: #0A2A14; border-color: #22A05A; color: #86EFAC; }
+
+    .cat-input {
+      flex: 1;
+      padding: 5px 10px;
+      font-size: 0.8125rem;
+    }
+
     /* ── Filter tabs ── */
     .filters {
       display: flex;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       border: 1.5px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
@@ -263,6 +276,31 @@
       font-weight: 600;
     }
 
+    /* ── Category filter chips ── */
+    .cat-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+      min-height: 0;
+    }
+
+    .cat-filter-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 3px 11px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .cat-filter-btn:hover { border-color: var(--pan-blue-mid); color: var(--pan-blue); background: var(--pan-blue-light); }
+    [data-theme="dark"] .cat-filter-btn:hover { color: #58A6FF; }
+    .cat-filter-btn.active { background: var(--pan-blue); border-color: var(--pan-blue); color: #fff; }
+
     /* ── Todo list ── */
     .todo-list {
       list-style: none;
@@ -274,8 +312,8 @@
     .todo-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 11px 13px;
+      gap: 8px;
+      padding: 10px 12px;
       border-radius: var(--radius);
       border: 1.5px solid var(--border);
       transition: border-color 0.15s, background 0.15s;
@@ -284,7 +322,7 @@
 
     .todo-item:hover { border-color: var(--pan-blue-mid); background: var(--pan-blue-light); }
     [data-theme="dark"] .todo-item:hover { border-color: #58A6FF; }
-    .todo-item.done   { background: var(--surface-alt); }
+    .todo-item.done { background: var(--surface-alt); }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(5px); }
@@ -292,14 +330,11 @@
     }
 
     .todo-check {
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       border: 2px solid var(--border);
       border-radius: 3px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       transition: border-color 0.15s, background 0.15s;
     }
@@ -313,11 +348,9 @@
 
     .todo-check.checked::after {
       content: "";
-      width: 4px;
-      height: 8px;
+      width: 4px; height: 8px;
       border: 2px solid #fff;
-      border-top: none;
-      border-left: none;
+      border-top: none; border-left: none;
       transform: rotate(45deg) translateY(-1px);
     }
 
@@ -328,9 +361,74 @@
       word-break: break-word;
     }
 
-    .done .todo-text {
+    .done .todo-text { color: var(--text-secondary); text-decoration: line-through; }
+
+    /* ── Priority badge ── */
+    .priority-badge {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      user-select: none;
+      transition: opacity 0.15s, filter 0.15s;
+    }
+
+    .priority-badge:hover { filter: brightness(0.92); }
+    .priority-badge.high   { background: #FEE2E2; color: #DC2626; }
+    .priority-badge.medium { background: #FEF3C7; color: #D97706; }
+    .priority-badge.low    { background: #DCFCE7; color: #16A34A; }
+
+    [data-theme="dark"] .priority-badge.high   { background: #3B0A0A; color: #FCA5A5; }
+    [data-theme="dark"] .priority-badge.medium { background: #2A1800; color: #FCD34D; }
+    [data-theme="dark"] .priority-badge.low    { background: #0A2A14; color: #86EFAC; }
+
+    /* ── Category tag ── */
+    .category-tag {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--pan-blue-light);
+      color: var(--pan-blue-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .category-tag:hover { background: #c8d8ee; }
+    [data-theme="dark"] .category-tag { color: #58A6FF; }
+    [data-theme="dark"] .category-tag:hover { background: #243550; }
+
+    .category-add {
+      font-size: 0.75rem;
       color: var(--text-secondary);
-      text-decoration: line-through;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .todo-item:hover .category-add { opacity: 0.5; }
+    .category-add:hover { opacity: 1 !important; background: var(--pan-blue-light); }
+
+    .category-edit-input {
+      font-size: 0.6875rem;
+      padding: 2px 8px;
+      border: 1.5px solid var(--border-focus);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text-primary);
+      outline: none;
+      width: 110px;
+      flex-shrink: 0;
     }
 
     /* ── Drag handle ── */
@@ -362,6 +460,7 @@
       line-height: 1;
       opacity: 0;
       transition: opacity 0.15s, color 0.15s, background 0.15s;
+      flex-shrink: 0;
     }
 
     .todo-item:hover .btn-delete { opacity: 1; }
@@ -433,16 +532,41 @@
           <p id="subtitle"></p>
         </header>
 
+        <!-- Task input -->
         <div class="input-row">
           <input id="newTask" type="text" maxlength="200" />
           <button class="btn-add" data-i18n="addBtn" onclick="addTask()">Add Task</button>
         </div>
 
+        <!-- Priority selector + category input for new task -->
+        <div class="task-options">
+          <div class="pri-selector">
+            <button class="pri-select-btn none active" data-p="" onclick="setNewPriority('')">—</button>
+            <button class="pri-select-btn high"   data-p="high"   onclick="setNewPriority('high')"   data-i18n="priorityHigh">High</button>
+            <button class="pri-select-btn medium" data-p="medium" onclick="setNewPriority('medium')" data-i18n="priorityMedium">Medium</button>
+            <button class="pri-select-btn low"    data-p="low"    onclick="setNewPriority('low')"    data-i18n="priorityLow">Low</button>
+          </div>
+          <input class="cat-input" id="newCategory" type="text" list="categoryList" maxlength="40" />
+          <datalist id="categoryList"></datalist>
+        </div>
+
+        <!-- Status filter -->
         <div class="filters">
           <button class="filter-btn active" data-i18n="filterAll"    onclick="setFilter('all', this)">All</button>
           <button class="filter-btn"        data-i18n="filterActive" onclick="setFilter('active', this)">Active</button>
           <button class="filter-btn"        data-i18n="filterDone"   onclick="setFilter('done', this)">Done</button>
         </div>
+
+        <!-- Priority filter -->
+        <div class="filters" id="priorityFilters">
+          <button class="filter-btn active" data-i18n="priAll"         onclick="setPriorityFilter('all', this)">All Priorities</button>
+          <button class="filter-btn"        data-i18n="priorityHigh"   onclick="setPriorityFilter('high', this)">High</button>
+          <button class="filter-btn"        data-i18n="priorityMedium" onclick="setPriorityFilter('medium', this)">Medium</button>
+          <button class="filter-btn"        data-i18n="priorityLow"    onclick="setPriorityFilter('low', this)">Low</button>
+        </div>
+
+        <!-- Category filter chips (rendered dynamically) -->
+        <div class="cat-filter-row" id="categoryFilters"></div>
 
         <ul class="todo-list" id="todoList"></ul>
       </div>
@@ -458,58 +582,80 @@
     // ── Translations ───────────────────────────────────────────────────────
     const I18N = {
       en: {
-        title:        'Todo — Palo Alto Networks',
-        appName:      'Task Manager',
-        heading:      'My Tasks',
-        allDone:      'All caught up!',
-        remaining:    n => `${n} task${n !== 1 ? 's' : ''} remaining`,
-        placeholder:  'Add a new task…',
-        addBtn:       'Add Task',
-        filterAll:    'All',
-        filterActive: 'Active',
-        filterDone:   'Done',
-        total:        n => `${n} total`,
-        clearBtn:     'Clear completed',
-        emptyDone:    'No completed tasks yet.',
-        emptyAll:     'Nothing here — add a task above.',
-        deleteTitle:  'Delete',
-        dragHandle:   'Drag to reorder',
+        title:           'Todo — Palo Alto Networks',
+        appName:         'Task Manager',
+        heading:         'My Tasks',
+        allDone:         'All caught up!',
+        remaining:       n => `${n} task${n !== 1 ? 's' : ''} remaining`,
+        placeholder:     'Add a new task…',
+        addBtn:          'Add Task',
+        filterAll:       'All',
+        filterActive:    'Active',
+        filterDone:      'Done',
+        total:           n => `${n} total`,
+        clearBtn:        'Clear completed',
+        emptyDone:       'No completed tasks yet.',
+        emptyAll:        'Nothing here — add a task above.',
+        deleteTitle:     'Delete',
+        dragHandle:      'Drag to reorder',
+        priorityHigh:    'High',
+        priorityMedium:  'Medium',
+        priorityLow:     'Low',
+        priAll:          'All Priorities',
+        catPlaceholder:  'Category…',
+        catAll:          'All Categories',
+        clickToChange:   'Click to change',
+        addCategory:     'Add category',
       },
       zh: {
-        title:        '待辦事項 — Palo Alto Networks',
-        appName:      '任務管理員',
-        heading:      '我的任務',
-        allDone:      '所有任務已完成！',
-        remaining:    n => `還有 ${n} 個任務未完成`,
-        placeholder:  '新增任務…',
-        addBtn:       '新增',
-        filterAll:    '全部',
-        filterActive: '未完成',
-        filterDone:   '已完成',
-        total:        n => `共 ${n} 項`,
-        clearBtn:     '清除已完成',
-        emptyDone:    '尚無已完成的任務。',
-        emptyAll:     '尚無任務 — 在上方新增一個。',
-        deleteTitle:  '刪除',
-        dragHandle:   '拖曳以重新排序',
+        title:           '待辦事項 — Palo Alto Networks',
+        appName:         '任務管理員',
+        heading:         '我的任務',
+        allDone:         '所有任務已完成！',
+        remaining:       n => `還有 ${n} 個任務未完成`,
+        placeholder:     '新增任務…',
+        addBtn:          '新增',
+        filterAll:       '全部',
+        filterActive:    '未完成',
+        filterDone:      '已完成',
+        total:           n => `共 ${n} 項`,
+        clearBtn:        '清除已完成',
+        emptyDone:       '尚無已完成的任務。',
+        emptyAll:        '尚無任務 — 在上方新增一個。',
+        deleteTitle:     '刪除',
+        dragHandle:      '拖曳以重新排序',
+        priorityHigh:    '高',
+        priorityMedium:  '中',
+        priorityLow:     '低',
+        priAll:          '所有優先級',
+        catPlaceholder:  '分類…',
+        catAll:          '所有分類',
+        clickToChange:   '點擊更改',
+        addCategory:     '新增分類',
       }
     };
 
     function t(key, arg) {
       const val = I18N[lang][key] ?? I18N.en[key];
-      return typeof val === 'function' ? val(arg) : val;
+      return typeof val === 'function' ? val(arg) : (val ?? '');
     }
 
     // ── State ──────────────────────────────────────────────────────────────
-    let todos  = [];
-    let filter = 'all';
-    let lang   = localStorage.getItem('pan-lang')  || 'en';
-    let theme  = localStorage.getItem('pan-theme') || 'light';
+    let todos          = [];
+    let categories     = [];   // loaded from server
+    let filter         = 'all';
+    let priorityFilter = 'all';
+    let categoryFilter = '';
+    let newPriority    = '';
+    let lang           = localStorage.getItem('pan-lang')  || 'en';
+    let theme          = localStorage.getItem('pan-theme') || 'light';
 
-    const input = document.getElementById('newTask');
-    const list  = document.getElementById('todoList');
+    const input    = document.getElementById('newTask');
+    const catInput = document.getElementById('newCategory');
+    const list     = document.getElementById('todoList');
 
     input.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+    catInput.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
 
     // ── Theme ──────────────────────────────────────────────────────────────
     const SUN  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
@@ -530,17 +676,14 @@
     function applyLang() {
       document.documentElement.lang = lang === 'zh' ? 'zh-TW' : 'en';
       document.title = t('title');
-
       document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);
       });
-
-      input.placeholder = t('placeholder');
-
+      input.placeholder    = t('placeholder');
+      catInput.placeholder = t('catPlaceholder');
       document.getElementById('btnEn').classList.toggle('active', lang === 'en');
       document.getElementById('btnZh').classList.toggle('active', lang === 'zh');
-
-      render(); // refresh dynamic strings (subtitle, countLabel, empty state)
+      render();
     }
 
     function setLang(l) {
@@ -549,12 +692,45 @@
       applyLang();
     }
 
+    // ── Category helpers ───────────────────────────────────────────────────
+    function updateCategoryDatalist() {
+      const dl = document.getElementById('categoryList');
+      dl.innerHTML = categories.map(c => `<option value="${escHtml(c)}">`).join('');
+    }
+
+    async function loadCategories() {
+      const res = await fetch('/api/categories');
+      categories = await res.json();
+      updateCategoryDatalist();
+    }
+
+    async function saveCategory(name) {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+      categories = await res.json();
+      updateCategoryDatalist();
+    }
+
+    // ── Priority helpers ───────────────────────────────────────────────────
+    function setNewPriority(p) {
+      newPriority = p;
+      document.querySelectorAll('.pri-select-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.p === p);
+      });
+    }
+
     // ── Visible list helper ────────────────────────────────────────────────
     function getVisible() {
-      return todos.filter(t =>
-        filter === 'all'    ? true :
-        filter === 'active' ? !t.done : t.done
-      );
+      return todos.filter(task => {
+        if (filter === 'active' &&  task.done) return false;
+        if (filter === 'done'   && !task.done) return false;
+        if (priorityFilter !== 'all' && task.priority !== priorityFilter) return false;
+        if (categoryFilter && task.category !== categoryFilter) return false;
+        return true;
+      });
     }
 
     // ── API ────────────────────────────────────────────────────────────────
@@ -575,8 +751,12 @@
     async function addTask() {
       const text = input.value.trim();
       if (!text) return;
-      todos.unshift({ id: Date.now(), text, done: false });
-      input.value = '';
+      const category = catInput.value.trim();
+      todos.unshift({ id: Date.now(), text, done: false, priority: newPriority, category });
+      input.value    = '';
+      catInput.value = '';
+      setNewPriority('');
+      if (category && !categories.includes(category)) await saveCategory(category);
       render();
       await saveTasks();
     }
@@ -592,6 +772,53 @@
       todos = todos.filter(t => t.id !== id);
       render();
       await saveTasks();
+    }
+
+    async function cyclePriority(id) {
+      const task = todos.find(t => t.id === id);
+      if (!task) return;
+      const cycle = ['', 'high', 'medium', 'low'];
+      task.priority = cycle[(cycle.indexOf(task.priority) + 1) % cycle.length];
+      render();
+      await saveTasks();
+    }
+
+    function editCategory(id) {
+      const li = list.querySelector(`[data-id="${id}"]`);
+      if (!li) return;
+      const existing = li.querySelector('.category-tag, .category-add');
+      const task = todos.find(t => t.id === id);
+      if (!task) return;
+
+      const inp = document.createElement('input');
+      inp.className = 'category-edit-input';
+      inp.setAttribute('list', 'categoryList');
+      inp.value     = task.category || '';
+      inp.maxLength = 40;
+
+      if (existing) existing.replaceWith(inp);
+      else li.querySelector('.btn-delete').before(inp);
+      inp.focus();
+      inp.select();
+
+      let committed = false;
+      async function commit() {
+        if (committed) return;
+        committed = true;
+        const newVal = inp.value.trim();
+        if (newVal !== task.category) {
+          task.category = newVal;
+          if (newVal && !categories.includes(newVal)) await saveCategory(newVal);
+          await saveTasks();
+        }
+        render();
+      }
+
+      inp.addEventListener('blur', commit);
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter')  { e.preventDefault(); inp.blur(); }
+        if (e.key === 'Escape') { committed = true; render(); }
+      });
     }
 
     async function reorder(fromId, toId, position) {
@@ -612,8 +839,20 @@
 
     function setFilter(f, btn) {
       filter = f;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filters:not(#priorityFilters) .filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      render();
+    }
+
+    function setPriorityFilter(f, btn) {
+      priorityFilter = f;
+      document.querySelectorAll('#priorityFilters .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    function setCategoryFilter(cat) {
+      categoryFilter = cat;
       render();
     }
 
@@ -621,39 +860,65 @@
     function render() {
       const visible = getVisible();
 
+      // Subtitle + count
       const active = todos.filter(task => !task.done).length;
       document.getElementById('subtitle').textContent =
         active === 0 ? t('allDone') : t('remaining', active);
       document.getElementById('countLabel').textContent = t('total', todos.length);
 
+      // Category filter chips
+      const usedCats = [...new Set(todos.map(t => t.category).filter(Boolean))];
+      const catRow = document.getElementById('categoryFilters');
+      if (usedCats.length > 0) {
+        catRow.innerHTML = [
+          `<button class="cat-filter-btn ${categoryFilter === '' ? 'active' : ''}" onclick="setCategoryFilter('')">${t('catAll')}</button>`,
+          ...usedCats.map(cat =>
+            `<button class="cat-filter-btn ${categoryFilter === cat ? 'active' : ''}" data-cat="${escHtml(cat)}" onclick="setCategoryFilter(this.dataset.cat)">${escHtml(cat)}</button>`
+          )
+        ].join('');
+      } else {
+        catRow.innerHTML = '';
+      }
+
+      // Task list
       if (visible.length === 0) {
         list.innerHTML = `<li class="empty">${filter === 'done' ? t('emptyDone') : t('emptyAll')}</li>`;
         return;
       }
 
-      list.innerHTML = visible.map(task => `
+      list.innerHTML = visible.map(task => {
+        const priLabel = task.priority ? t('priority' + task.priority.charAt(0).toUpperCase() + task.priority.slice(1)) : '';
+        const priBadge = task.priority
+          ? `<span class="priority-badge ${task.priority}" onclick="cyclePriority(${task.id})" title="${t('clickToChange')}">${priLabel}</span>`
+          : `<span class="priority-badge" style="opacity:.35;font-size:.6875rem;cursor:pointer;" onclick="cyclePriority(${task.id})" title="${t('clickToChange')}">—</span>`;
+        const catBadge = task.category
+          ? `<span class="category-tag" onclick="editCategory(${task.id})" title="${t('clickToChange')}">${escHtml(task.category)}</span>`
+          : `<span class="category-add" onclick="editCategory(${task.id})" title="${t('addCategory')}">＋</span>`;
+
+        return `
         <li class="todo-item ${task.done ? 'done' : ''}" data-id="${task.id}" draggable="true">
           <span class="drag-handle" title="${t('dragHandle')}">⠿</span>
           <div class="todo-check ${task.done ? 'checked' : ''}" onclick="toggle(${task.id})"></div>
           <span class="todo-text">${escHtml(task.text)}</span>
+          ${priBadge}
+          ${catBadge}
           <button class="btn-delete" onclick="remove(${task.id})" title="${t('deleteTitle')}">✕</button>
-        </li>
-      `).join('');
+        </li>`;
+      }).join('');
     }
 
     function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // ── Drag-and-drop ──────────────────────────────────────────────────────
     let dragId   = null;
-    let dragOver = null; // { id, position: 'before'|'after' }
+    let dragOver = null;
 
     list.addEventListener('dragstart', e => {
       const item = e.target.closest('.todo-item');
       if (!item) return;
       dragId = parseInt(item.dataset.id);
-      // defer class add so the ghost image renders normally
       requestAnimationFrame(() => item.classList.add('dragging'));
     });
 
@@ -682,14 +947,16 @@
       list.querySelectorAll('.dragging, .drag-over-top, .drag-over-bottom').forEach(el => {
         el.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
       });
-      dragId   = null;
-      dragOver = null;
+      dragId = null; dragOver = null;
     }
 
     // ── Init ───────────────────────────────────────────────────────────────
     applyTheme();
     applyLang();
-    loadTasks().then(data => { todos = data; render(); });
+    Promise.all([loadTasks(), loadCategories()]).then(([data]) => {
+      todos = data;
+      render();
+    });
   </script>
 </body>
 </html>

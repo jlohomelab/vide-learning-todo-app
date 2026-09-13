@@ -8,10 +8,11 @@ A learning project for exploring web development fundamentals and Claude Code wo
 
 ```
 vide-learning/
-├── CLAUDE.md       # This file
-├── index.html      # Todo list UI (served by the backend)
-├── server.js       # Node.js HTTP server
-└── tasks.csv       # Persistent task storage (auto-created on first run)
+├── CLAUDE.md           # This file
+├── index.html          # Todo list UI (served by the backend)
+├── server.js           # Node.js HTTP server
+├── tasks.csv           # Persistent task storage (auto-created on first run)
+└── categories.json     # Persistent category list (auto-created on first run)
 ```
 
 ## Starting the Server
@@ -22,7 +23,7 @@ node server.js
 
 Then open **http://localhost:3000** in a browser.
 
-- Port: **3000** (hardcoded in `server.js` line 4: `const PORT = 3000;`)
+- Port: **3000** (hardcoded in `server.js`)
 - No `npm install` needed — uses Node.js built-in modules only (`http`, `fs`, `path`)
 - The server must be running for the app to load or save tasks; opening `index.html` directly will not work
 
@@ -33,15 +34,17 @@ Then open **http://localhost:3000** in a browser.
 | `GET` | `/` | Serves `index.html` |
 | `GET` | `/api/tasks` | Returns all tasks as a JSON array |
 | `POST` | `/api/tasks` | Receives a JSON array and overwrites `tasks.csv` |
+| `GET` | `/api/categories` | Returns all category names as a JSON array |
+| `POST` | `/api/categories` | Receives `{ name: String }`, appends if new, returns updated array |
 
 ## tasks.csv Structure
 
 The file is created automatically in the project root on the first task save.
 
 ```
-id,text,done
-1726123456789,"Buy groceries",false
-1726123456000,"Call dentist",true
+id,text,done,priority,category
+1726123456789,"Buy groceries",false,high,"Work"
+1726123456000,"Call dentist",true,"",""
 ```
 
 | Column | Type | Description |
@@ -49,19 +52,35 @@ id,text,done
 | `id` | integer | Unix timestamp in milliseconds (used as unique ID) |
 | `text` | string | Task text, always double-quoted; inner `"` are escaped as `""` |
 | `done` | boolean | `true` if completed, `false` if active |
+| `priority` | string | `high`, `medium`, `low`, or empty string |
+| `category` | string | Any text label; always double-quoted |
 
-- First row is always the header `id,text,done`
+- First row is always the header `id,text,done,priority,category`
 - Row order reflects the user-defined sequence (drag-and-drop reorderable)
+- **Backward-compatible**: rows in the old 3-column format load with empty priority and category
 - Editing the file manually works — restart is not required, changes are read on the next page load
+
+## categories.json Structure
+
+A flat JSON array of category name strings, stored server-side so all browsers and computers see the same list.
+
+```json
+["Work", "Personal", "Shopping", "Finance"]
+```
+
+- Created automatically with `["Work", "Personal", "Shopping"]` defaults on first run
+- New categories are appended when a user types one in the UI; they persist permanently on the server
 
 ## Features
 
 - **Add / complete / delete tasks** — changes save to `tasks.csv` immediately
-- **Drag-and-drop reordering** — hover a task to reveal the `⠿` grip handle, then drag to any position; an orange drop indicator shows the landing spot; works across all filter views
-- **Filter tabs** — All / Active / Done
+- **Priority badges** — assign High / Medium / Low at creation or click the badge on any task to cycle through priorities; color-coded (red / amber / green)
+- **Category tags** — assign a category at creation or click a tag on any task to edit inline; custom categories saved server-side and shared across all browsers
+- **Drag-and-drop reordering** — hover a task to reveal the `⠿` grip handle, then drag to any position
+- **Filter tabs** — All / Active / Done (status); All Priorities / High / Medium / Low (priority); per-category chips rendered dynamically
 - **Clear completed** — removes all done tasks in one click
 - **Dark / light mode** — toggle in the top-right of the nav bar; preference saved to `localStorage`
-- **Language switching** — EN / 中文 toggle in the nav bar; supports English and Traditional Chinese; preference saved to `localStorage`
+- **Language switching** — EN / 中文 toggle; supports English and Traditional Chinese; preference saved to `localStorage`
 
 ## Tech Stack
 
