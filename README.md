@@ -82,7 +82,7 @@ vide-learning-todo-app/
 ├── index.html        # Frontend UI (served by the backend)
 ├── server.js         # Node.js HTTP server
 ├── categories.json   # Persistent category list (auto-created on first run)
-├── tasks.csv         # Persistent task storage (auto-created on first run, git-ignored)
+├── tasks.json        # Persistent task storage (auto-created on first run, git-ignored)
 └── CLAUDE.md         # Developer notes and API reference
 ```
 
@@ -95,7 +95,7 @@ vide-learning-todo-app/
 ]
 ```
 
-If a legacy `tasks.csv` file exists, the server automatically migrates it to `tasks.json` on first start.
+If a legacy `tasks.csv` file exists from an older version, the server automatically migrates it to `tasks.json` on first start.
 
 ### API routes
 
@@ -103,7 +103,7 @@ If a legacy `tasks.csv` file exists, the server automatically migrates it to `ta
 |---|---|---|
 | `GET` | `/` | Serves `index.html` |
 | `GET` | `/api/tasks` | Returns all tasks as JSON |
-| `POST` | `/api/tasks` | Overwrites `tasks.csv` with the posted JSON array |
+| `POST` | `/api/tasks` | Overwrites `tasks.json` with the posted JSON array |
 | `GET` | `/api/categories` | Returns all category names as JSON |
 | `POST` | `/api/categories` | Appends a new category `{ name }` and returns the updated list |
 
@@ -113,7 +113,7 @@ If a legacy `tasks.csv` file exists, the server automatically migrates it to `ta
 
 - **Frontend** — Vanilla HTML, CSS (custom properties for theming), JavaScript (no frameworks)
 - **Backend** — Node.js built-in `http`, `fs`, `path` modules only
-- **Storage** — CSV file for tasks, JSON file for categories
+- **Storage** — JSON files for tasks (`tasks.json`) and categories (`categories.json`)
 - **Design** — Navy (`#003087`) and orange (`#FA582D`) color palette with CSS custom properties for theming
 
 ---

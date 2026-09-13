@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A learning project for exploring web development fundamentals and Claude Code workflows. A todo list app with a Node.js backend and persistent CSV storage.
+A learning project for exploring web development fundamentals and Claude Code workflows. A todo list app with a Node.js backend and persistent JSON storage.
 
 ## Project Structure
 
@@ -33,7 +33,7 @@ Then open **http://localhost:3000** in a browser.
 |--------|------|-------------|
 | `GET` | `/` | Serves `index.html` |
 | `GET` | `/api/tasks` | Returns all tasks as a JSON array |
-| `POST` | `/api/tasks` | Receives a JSON array and overwrites `tasks.csv` |
+| `POST` | `/api/tasks` | Receives a JSON array and overwrites `tasks.json` |
 | `GET` | `/api/categories` | Returns all category names as a JSON array |
 | `POST` | `/api/categories` | Receives `{ name: String }`, appends if new, returns updated array |
 
@@ -58,7 +58,7 @@ The file is created automatically in the project root on the first task save.
 
 - Array order reflects the user-defined sequence (drag-and-drop reorderable)
 - Editing the file manually works — restart is not required, changes are read on the next page load
-- **Migration**: if a legacy `tasks.csv` exists and `tasks.json` does not, the server automatically migrates the data on first start
+- **Migration**: if a legacy `tasks.csv` exists from an older version and `tasks.json` does not, the server automatically migrates the data on first start
 
 ## categories.json Structure
 
@@ -73,7 +73,7 @@ A flat JSON array of category name strings, stored server-side so all browsers a
 
 ## Features
 
-- **Add / complete / delete tasks** — changes save to `tasks.csv` immediately
+- **Add / complete / delete tasks** — changes save to `tasks.json` immediately
 - **Priority badges** — assign High / Medium / Low at creation or click the badge on any task to cycle through priorities; color-coded (red / amber / green)
 - **Category tags** — assign a category at creation or click a tag on any task to edit inline; custom categories saved server-side and shared across all browsers
 - **Drag-and-drop reordering** — hover a task to reveal the `⠿` grip handle, then drag to any position
