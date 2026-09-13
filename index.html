@@ -333,33 +333,23 @@
       text-decoration: line-through;
     }
 
-    /* ── Move buttons ── */
-    .move-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
+    /* ── Drag handle ── */
+    .drag-handle {
+      color: var(--text-secondary);
+      cursor: grab;
       opacity: 0;
       transition: opacity 0.15s;
       flex-shrink: 0;
+      user-select: none;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 2px;
     }
 
-    .todo-item:hover .move-btns { opacity: 1; }
-
-    .btn-move {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-secondary);
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-size: 0.7rem;
-      line-height: 1.2;
-      transition: color 0.15s, background 0.15s;
-    }
-
-    .btn-move:hover:not(:disabled) { color: var(--pan-blue); background: var(--pan-blue-light); }
-    [data-theme="dark"] .btn-move:hover:not(:disabled) { color: #58A6FF; }
-    .btn-move:disabled { opacity: 0.25; cursor: default; }
+    .todo-item:hover .drag-handle { opacity: 1; }
+    .todo-item.dragging { opacity: 0.35; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .todo-item.drag-over-top    { border-top: 2px solid var(--pan-orange) !important; }
+    .todo-item.drag-over-bottom { border-bottom: 2px solid var(--pan-orange) !important; }
 
     .btn-delete {
       background: none;
@@ -483,8 +473,7 @@
         emptyDone:    'No completed tasks yet.',
         emptyAll:     'Nothing here — add a task above.',
         deleteTitle:  'Delete',
-        moveUp:       'Move up',
-        moveDown:     'Move down',
+        dragHandle:   'Drag to reorder',
       },
       zh: {
         title:        '待辦事項 — Palo Alto Networks',
@@ -502,8 +491,7 @@
         emptyDone:    '尚無已完成的任務。',
         emptyAll:     '尚無任務 — 在上方新增一個。',
         deleteTitle:  '刪除',
-        moveUp:       '上移',
-        moveDown:     '下移',
+        dragHandle:   '拖曳以重新排序',
       }
     };
 
@@ -606,24 +594,12 @@
       await saveTasks();
     }
 
-    async function moveUp(id) {
-      const visible = getVisible();
-      const vi = visible.findIndex(t => t.id === id);
-      if (vi <= 0) return;
-      const ai = todos.findIndex(t => t.id === id);
-      const bi = todos.findIndex(t => t.id === visible[vi - 1].id);
-      [todos[ai], todos[bi]] = [todos[bi], todos[ai]];
-      render();
-      await saveTasks();
-    }
-
-    async function moveDown(id) {
-      const visible = getVisible();
-      const vi = visible.findIndex(t => t.id === id);
-      if (vi >= visible.length - 1) return;
-      const ai = todos.findIndex(t => t.id === id);
-      const bi = todos.findIndex(t => t.id === visible[vi + 1].id);
-      [todos[ai], todos[bi]] = [todos[bi], todos[ai]];
+    async function reorder(fromId, toId, position) {
+      if (fromId === toId) return;
+      const fromIdx = todos.findIndex(t => t.id === fromId);
+      const item = todos.splice(fromIdx, 1)[0];
+      const toIdx = todos.findIndex(t => t.id === toId);
+      todos.splice(position === 'before' ? toIdx : toIdx + 1, 0, item);
       render();
       await saveTasks();
     }
@@ -655,18 +631,11 @@
         return;
       }
 
-      list.innerHTML = visible.map((task, vi) => `
-        <li class="todo-item ${task.done ? 'done' : ''}" data-id="${task.id}">
+      list.innerHTML = visible.map(task => `
+        <li class="todo-item ${task.done ? 'done' : ''}" data-id="${task.id}" draggable="true">
+          <span class="drag-handle" title="${t('dragHandle')}">⠿</span>
           <div class="todo-check ${task.done ? 'checked' : ''}" onclick="toggle(${task.id})"></div>
           <span class="todo-text">${escHtml(task.text)}</span>
-          <div class="move-btns">
-            <button class="btn-move" onclick="moveUp(${task.id})"
-              ${vi === 0 ? 'disabled' : ''}
-              title="${t('moveUp')}">▲</button>
-            <button class="btn-move" onclick="moveDown(${task.id})"
-              ${vi === visible.length - 1 ? 'disabled' : ''}
-              title="${t('moveDown')}">▼</button>
-          </div>
           <button class="btn-delete" onclick="remove(${task.id})" title="${t('deleteTitle')}">✕</button>
         </li>
       `).join('');
@@ -674,6 +643,47 @@
 
     function escHtml(s) {
       return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Drag-and-drop ──────────────────────────────────────────────────────
+    let dragId   = null;
+    let dragOver = null; // { id, position: 'before'|'after' }
+
+    list.addEventListener('dragstart', e => {
+      const item = e.target.closest('.todo-item');
+      if (!item) return;
+      dragId = parseInt(item.dataset.id);
+      // defer class add so the ghost image renders normally
+      requestAnimationFrame(() => item.classList.add('dragging'));
+    });
+
+    list.addEventListener('dragover', e => {
+      e.preventDefault();
+      const item = e.target.closest('.todo-item');
+      if (!item) return;
+      list.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+      const { top, height } = item.getBoundingClientRect();
+      const position = e.clientY < top + height / 2 ? 'before' : 'after';
+      item.classList.add(position === 'before' ? 'drag-over-top' : 'drag-over-bottom');
+      dragOver = { id: parseInt(item.dataset.id), position };
+    });
+
+    list.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragId && dragOver) reorder(dragId, dragOver.id, dragOver.position);
+      cleanup();
+    });
+
+    list.addEventListener('dragend', cleanup);
+
+    function cleanup() {
+      list.querySelectorAll('.dragging, .drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('dragging', 'drag-over-top', 'drag-over-bottom');
+      });
+      dragId   = null;
+      dragOver = null;
     }
 
     // ── Init ───────────────────────────────────────────────────────────────
