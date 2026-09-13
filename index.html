@@ -333,6 +333,34 @@
       text-decoration: line-through;
     }
 
+    /* ── Move buttons ── */
+    .move-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      opacity: 0;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+
+    .todo-item:hover .move-btns { opacity: 1; }
+
+    .btn-move {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      line-height: 1.2;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .btn-move:hover:not(:disabled) { color: var(--pan-blue); background: var(--pan-blue-light); }
+    [data-theme="dark"] .btn-move:hover:not(:disabled) { color: #58A6FF; }
+    .btn-move:disabled { opacity: 0.25; cursor: default; }
+
     .btn-delete {
       background: none;
       border: none;
@@ -455,6 +483,8 @@
         emptyDone:    'No completed tasks yet.',
         emptyAll:     'Nothing here — add a task above.',
         deleteTitle:  'Delete',
+        moveUp:       'Move up',
+        moveDown:     'Move down',
       },
       zh: {
         title:        '待辦事項 — Palo Alto Networks',
@@ -472,6 +502,8 @@
         emptyDone:    '尚無已完成的任務。',
         emptyAll:     '尚無任務 — 在上方新增一個。',
         deleteTitle:  '刪除',
+        moveUp:       '上移',
+        moveDown:     '下移',
       }
     };
 
@@ -529,6 +561,14 @@
       applyLang();
     }
 
+    // ── Visible list helper ────────────────────────────────────────────────
+    function getVisible() {
+      return todos.filter(t =>
+        filter === 'all'    ? true :
+        filter === 'active' ? !t.done : t.done
+      );
+    }
+
     // ── API ────────────────────────────────────────────────────────────────
     async function loadTasks() {
       const res = await fetch('/api/tasks');
@@ -566,6 +606,28 @@
       await saveTasks();
     }
 
+    async function moveUp(id) {
+      const visible = getVisible();
+      const vi = visible.findIndex(t => t.id === id);
+      if (vi <= 0) return;
+      const ai = todos.findIndex(t => t.id === id);
+      const bi = todos.findIndex(t => t.id === visible[vi - 1].id);
+      [todos[ai], todos[bi]] = [todos[bi], todos[ai]];
+      render();
+      await saveTasks();
+    }
+
+    async function moveDown(id) {
+      const visible = getVisible();
+      const vi = visible.findIndex(t => t.id === id);
+      if (vi >= visible.length - 1) return;
+      const ai = todos.findIndex(t => t.id === id);
+      const bi = todos.findIndex(t => t.id === visible[vi + 1].id);
+      [todos[ai], todos[bi]] = [todos[bi], todos[ai]];
+      render();
+      await saveTasks();
+    }
+
     async function clearDone() {
       todos = todos.filter(t => !t.done);
       render();
@@ -581,10 +643,7 @@
 
     // ── Render ─────────────────────────────────────────────────────────────
     function render() {
-      const visible = todos.filter(task =>
-        filter === 'all'    ? true :
-        filter === 'active' ? !task.done : task.done
-      );
+      const visible = getVisible();
 
       const active = todos.filter(task => !task.done).length;
       document.getElementById('subtitle').textContent =
@@ -596,10 +655,18 @@
         return;
       }
 
-      list.innerHTML = visible.map(task => `
+      list.innerHTML = visible.map((task, vi) => `
         <li class="todo-item ${task.done ? 'done' : ''}" data-id="${task.id}">
           <div class="todo-check ${task.done ? 'checked' : ''}" onclick="toggle(${task.id})"></div>
           <span class="todo-text">${escHtml(task.text)}</span>
+          <div class="move-btns">
+            <button class="btn-move" onclick="moveUp(${task.id})"
+              ${vi === 0 ? 'disabled' : ''}
+              title="${t('moveUp')}">▲</button>
+            <button class="btn-move" onclick="moveDown(${task.id})"
+              ${vi === visible.length - 1 ? 'disabled' : ''}
+              title="${t('moveDown')}">▼</button>
+          </div>
           <button class="btn-delete" onclick="remove(${task.id})" title="${t('deleteTitle')}">✕</button>
         </li>
       `).join('');
