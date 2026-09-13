@@ -17,6 +17,7 @@ pids/
 .env.*.local
 
 # Data (contains personal task content)
+tasks.json
 tasks.csv
 
 # OS

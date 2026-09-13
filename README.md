@@ -17,7 +17,7 @@ A clean, modern task manager built with vanilla HTML/CSS/JS and a Node.js backen
 | **Filters** | Filter by status (All / Active / Done), by priority, and by category chip. |
 | **Dark / light mode** | Toggle in the nav bar; preference remembered in `localStorage`. |
 | **Language switching** | English and Traditional Chinese (繁體中文), switchable in the nav bar. |
-| **Persistent storage** | Tasks saved to `tasks.csv`; categories saved to `categories.json` — no database required. |
+| **Persistent storage** | Tasks saved to `tasks.json`; categories saved to `categories.json` — no database required. |
 
 ---
 
@@ -86,15 +86,16 @@ vide-learning-todo-app/
 └── CLAUDE.md         # Developer notes and API reference
 ```
 
-### tasks.csv format
+### tasks.json format
 
-```
-id,text,done,priority,category
-1726123456789,"Buy groceries",false,high,"Work"
-1726123456000,"Call dentist",true,"",""
+```json
+[
+  { "id": 1726123456789, "text": "Buy groceries", "done": false, "priority": "high", "category": "Work" },
+  { "id": 1726123456000, "text": "Call dentist",  "done": true,  "priority": "",     "category": "" }
+]
 ```
 
-Old 3-column rows (without priority/category) are loaded with those fields defaulting to empty — no migration needed.
+If a legacy `tasks.csv` file exists, the server automatically migrates it to `tasks.json` on first start.
 
 ### API routes
 

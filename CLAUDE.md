@@ -11,7 +11,7 @@ vide-learning/
 ├── CLAUDE.md           # This file
 ├── index.html          # Todo list UI (served by the backend)
 ├── server.js           # Node.js HTTP server
-├── tasks.csv           # Persistent task storage (auto-created on first run)
+├── tasks.json          # Persistent task storage (auto-created on first run, git-ignored)
 └── categories.json     # Persistent category list (auto-created on first run)
 ```
 
@@ -37,28 +37,28 @@ Then open **http://localhost:3000** in a browser.
 | `GET` | `/api/categories` | Returns all category names as a JSON array |
 | `POST` | `/api/categories` | Receives `{ name: String }`, appends if new, returns updated array |
 
-## tasks.csv Structure
+## tasks.json Structure
 
 The file is created automatically in the project root on the first task save.
 
-```
-id,text,done,priority,category
-1726123456789,"Buy groceries",false,high,"Work"
-1726123456000,"Call dentist",true,"",""
+```json
+[
+  { "id": 1726123456789, "text": "Buy groceries", "done": false, "priority": "high", "category": "Work" },
+  { "id": 1726123456000, "text": "Call dentist",  "done": true,  "priority": "",     "category": "" }
+]
 ```
 
-| Column | Type | Description |
-|--------|------|-------------|
+| Field | Type | Description |
+|-------|------|-------------|
 | `id` | integer | Unix timestamp in milliseconds (used as unique ID) |
-| `text` | string | Task text, always double-quoted; inner `"` are escaped as `""` |
+| `text` | string | Task text |
 | `done` | boolean | `true` if completed, `false` if active |
-| `priority` | string | `high`, `medium`, `low`, or empty string |
-| `category` | string | Any text label; always double-quoted |
+| `priority` | string | `"high"`, `"medium"`, `"low"`, or `""` |
+| `category` | string | Any text label, or `""` if unset |
 
-- First row is always the header `id,text,done,priority,category`
-- Row order reflects the user-defined sequence (drag-and-drop reorderable)
-- **Backward-compatible**: rows in the old 3-column format load with empty priority and category
+- Array order reflects the user-defined sequence (drag-and-drop reorderable)
 - Editing the file manually works — restart is not required, changes are read on the next page load
+- **Migration**: if a legacy `tasks.csv` exists and `tasks.json` does not, the server automatically migrates the data on first start
 
 ## categories.json Structure
 
