@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A learning project for exploring web development fundamentals and Claude Code workflows. A simple todo list app with a Node.js backend that persists tasks to a CSV file.
+A learning project for exploring web development fundamentals and Claude Code workflows. A todo list app with a Node.js backend, persistent CSV storage, and a Palo Alto Networks corporate UI.
 
 ## Project Structure
 
@@ -51,11 +51,27 @@ id,text,done
 | `done` | boolean | `true` if completed, `false` if active |
 
 - First row is always the header `id,text,done`
-- Rows are ordered newest-first (most recently added at the top)
+- Row order reflects the user-defined sequence (drag-and-drop reorderable)
 - Editing the file manually works — restart is not required, changes are read on the next page load
+
+## Features
+
+- **Add / complete / delete tasks** — changes save to `tasks.csv` immediately
+- **Drag-and-drop reordering** — hover a task to reveal the `⠿` grip handle, then drag to any position; an orange drop indicator shows the landing spot; works across all filter views
+- **Filter tabs** — All / Active / Done
+- **Clear completed** — removes all done tasks in one click
+- **Dark / light mode** — toggle in the top-right of the nav bar; preference saved to `localStorage`
+- **Language switching** — EN / 中文 toggle in the nav bar; supports English and Traditional Chinese; preference saved to `localStorage`
 
 ## Tech Stack
 
 - Vanilla HTML, CSS, JavaScript — no frameworks or build tools
 - Node.js built-in modules only — no external dependencies
 - Palo Alto Networks corporate color palette (`#003087` blue, `#FA582D` orange)
+
+## Git Branches
+
+| Branch | Description |
+|--------|-------------|
+| `master` | Main branch — stable, all features merged |
+| `feature/sequence` | Task reordering feature (merged into master) |
