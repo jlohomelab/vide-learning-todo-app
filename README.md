@@ -2,6 +2,8 @@
 
 A clean, modern task manager built with vanilla HTML/CSS/JS and a Node.js backend. No frameworks, no dependencies — just Node.js built-ins.
 
+![Todo App screenshot](preview.png)
+
 ---
 
 ## Features
