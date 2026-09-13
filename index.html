@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo — Palo Alto Networks</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Light theme (default) ── */
+    :root {
+      --pan-blue:       #003087;
+      --pan-blue-mid:   #005DAA;
+      --pan-blue-light: #E6EEF8;
+      --pan-orange:     #FA582D;
+
+      --bg:             #F2F4F7;
+      --surface:        #FFFFFF;
+      --surface-alt:    #F7F9FC;
+      --border:         #D0D7E2;
+      --border-focus:   #005DAA;
+      --text-primary:   #1A2333;
+      --text-secondary: #5A6A84;
+      --danger:         #D93025;
+      --danger-bg:      #fdecea;
+
+      --radius: 6px;
+      --shadow: 0 1px 4px rgba(0,48,135,.08), 0 4px 20px rgba(0,48,135,.08);
+    }
+
+    /* ── Dark theme ── */
+    [data-theme="dark"] {
+      --pan-blue-light: #1A2A40;
+
+      --bg:             #0D1117;
+      --surface:        #161B22;
+      --surface-alt:    #0D1117;
+      --border:         #30363D;
+      --border-focus:   #58A6FF;
+      --text-primary:   #E6EDF3;
+      --text-secondary: #8B949E;
+      --danger:         #F85149;
+      --danger-bg:      rgba(248,81,73,.15);
+
+      --shadow: 0 1px 4px rgba(0,0,0,.4), 0 4px 20px rgba(0,0,0,.4);
+    }
+
+    /* ── Smooth theme transition ── */
+    body, .card, .card-body, .card-footer,
+    .input-row input, .filter-btn, .todo-item, .filters {
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Top nav bar ── */
+    .topbar {
+      width: 100%;
+      background: var(--pan-blue);
+      padding: 0 20px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .topbar-logo svg { flex-shrink: 0; }
+
+    .topbar-brand {
+      color: #fff;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,.25);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .topbar-app {
+      color: rgba(255,255,255,.75);
+      font-size: 0.875rem;
+    }
+
+    /* push controls to the right */
+    .topbar-spacer { flex: 1; }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Language toggle */
+    .lang-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 4px;
+      color: rgba(255,255,255,.8);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.02em;
+    }
+
+    .lang-btn:hover      { background: rgba(255,255,255,.12); color: #fff; }
+    .lang-btn.active     { background: rgba(255,255,255,.2); color: #fff; border-color: rgba(255,255,255,.7); }
+
+    /* Theme toggle */
+    .theme-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 4px;
+      color: rgba(255,255,255,.8);
+      width: 30px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      margin-left: 6px;
+    }
+
+    .theme-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+    /* ── Main card ── */
+    .wrapper {
+      width: 100%;
+      max-width: 560px;
+      padding: 36px 16px 48px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .card-stripe {
+      height: 4px;
+      background: linear-gradient(90deg, var(--pan-orange) 0%, #F9923B 100%);
+    }
+
+    .card-body { padding: 28px 28px 24px; }
+
+    header { margin-bottom: 24px; }
+
+    header h1 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--pan-blue);
+      letter-spacing: -0.01em;
+    }
+
+    [data-theme="dark"] header h1 { color: #58A6FF; }
+
+    header p {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ── Input row ── */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
+    }
+
+    .input-row input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(0,93,170,.15);
+    }
+
+    [data-theme="dark"] .input-row input:focus {
+      box-shadow: 0 0 0 3px rgba(88,166,255,.15);
+    }
+
+    .input-row input::placeholder { color: var(--text-secondary); }
+
+    .btn-add {
+      background: var(--pan-orange);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover  { background: #e04a22; }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* ── Filter tabs ── */
+    .filters {
+      display: flex;
+      margin-bottom: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .filter-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      border-right: 1.5px solid var(--border);
+      padding: 7px 0;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.2s;
+    }
+
+    .filter-btn:last-child { border-right: none; }
+    .filter-btn:hover { background: var(--pan-blue-light); color: var(--pan-blue); }
+    [data-theme="dark"] .filter-btn:hover { color: #58A6FF; }
+
+    .filter-btn.active {
+      background: var(--pan-blue);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ── Todo list ── */
+    .todo-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 13px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      transition: border-color 0.15s, background 0.15s;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .todo-item:hover { border-color: var(--pan-blue-mid); background: var(--pan-blue-light); }
+    [data-theme="dark"] .todo-item:hover { border-color: #58A6FF; }
+    .todo-item.done   { background: var(--surface-alt); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .todo-check {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .todo-check:hover { border-color: var(--pan-orange); }
+
+    .todo-check.checked {
+      background: var(--pan-orange);
+      border-color: var(--pan-orange);
+    }
+
+    .todo-check.checked::after {
+      content: "";
+      width: 4px;
+      height: 8px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 0.9375rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .done .todo-text {
+      color: var(--text-secondary);
+      text-decoration: line-through;
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 3px 5px;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .todo-item:hover .btn-delete { opacity: 1; }
+    .btn-delete:hover { color: var(--danger); background: var(--danger-bg); }
+
+    .empty {
+      text-align: center;
+      padding: 28px 0 12px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* ── Footer ── */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 28px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .btn-clear {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .btn-clear:hover { color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 0C7 4 4 7 4 11c0 3.9 3.1 7 7 7s7-3.1 7-7c0-4-3-7-7-11z" fill="#FA582D"/>
+        <path d="M11 8c-1.5 2-2.5 3.5-2.5 5 0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5C13.5 11.5 12.5 10 11 8z" fill="#fff" opacity=".85"/>
+      </svg>
+      <span class="topbar-brand">Palo Alto Networks</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <span class="topbar-app" data-i18n="appName">Task Manager</span>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="topbar-controls">
+      <button class="lang-btn active" id="btnEn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn"        id="btnZh" onclick="setLang('zh')">中文</button>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">
+        <!-- icon injected by JS -->
+      </button>
+    </div>
+  </nav>
+
+  <div class="wrapper">
+    <div class="card">
+      <div class="card-stripe"></div>
+
+      <div class="card-body">
+        <header>
+          <h1 data-i18n="heading">My Tasks</h1>
+          <p id="subtitle"></p>
+        </header>
+
+        <div class="input-row">
+          <input id="newTask" type="text" maxlength="200" />
+          <button class="btn-add" data-i18n="addBtn" onclick="addTask()">Add Task</button>
+        </div>
+
+        <div class="filters">
+          <button class="filter-btn active" data-i18n="filterAll"    onclick="setFilter('all', this)">All</button>
+          <button class="filter-btn"        data-i18n="filterActive" onclick="setFilter('active', this)">Active</button>
+          <button class="filter-btn"        data-i18n="filterDone"   onclick="setFilter('done', this)">Done</button>
+        </div>
+
+        <ul class="todo-list" id="todoList"></ul>
+      </div>
+
+      <div class="card-footer">
+        <span id="countLabel"></span>
+        <button class="btn-clear" data-i18n="clearBtn" onclick="clearDone()">Clear completed</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Translations ───────────────────────────────────────────────────────
+    const I18N = {
+      en: {
+        title:        'Todo — Palo Alto Networks',
+        appName:      'Task Manager',
+        heading:      'My Tasks',
+        allDone:      'All caught up!',
+        remaining:    n => `${n} task${n !== 1 ? 's' : ''} remaining`,
+        placeholder:  'Add a new task…',
+        addBtn:       'Add Task',
+        filterAll:    'All',
+        filterActive: 'Active',
+        filterDone:   'Done',
+        total:        n => `${n} total`,
+        clearBtn:     'Clear completed',
+        emptyDone:    'No completed tasks yet.',
+        emptyAll:     'Nothing here — add a task above.',
+        deleteTitle:  'Delete',
+      },
+      zh: {
+        title:        '待辦事項 — Palo Alto Networks',
+        appName:      '任務管理員',
+        heading:      '我的任務',
+        allDone:      '所有任務已完成！',
+        remaining:    n => `還有 ${n} 個任務未完成`,
+        placeholder:  '新增任務…',
+        addBtn:       '新增',
+        filterAll:    '全部',
+        filterActive: '未完成',
+        filterDone:   '已完成',
+        total:        n => `共 ${n} 項`,
+        clearBtn:     '清除已完成',
+        emptyDone:    '尚無已完成的任務。',
+        emptyAll:     '尚無任務 — 在上方新增一個。',
+        deleteTitle:  '刪除',
+      }
+    };
+
+    function t(key, arg) {
+      const val = I18N[lang][key] ?? I18N.en[key];
+      return typeof val === 'function' ? val(arg) : val;
+    }
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let todos  = [];
+    let filter = 'all';
+    let lang   = localStorage.getItem('pan-lang')  || 'en';
+    let theme  = localStorage.getItem('pan-theme') || 'light';
+
+    const input = document.getElementById('newTask');
+    const list  = document.getElementById('todoList');
+
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+    // ── Theme ──────────────────────────────────────────────────────────────
+    const SUN  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+    const MOON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('themeBtn').innerHTML = theme === 'dark' ? SUN : MOON;
+    }
+
+    function toggleTheme() {
+      theme = theme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('pan-theme', theme);
+      applyTheme();
+    }
+
+    // ── Language ───────────────────────────────────────────────────────────
+    function applyLang() {
+      document.documentElement.lang = lang === 'zh' ? 'zh-TW' : 'en';
+      document.title = t('title');
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+      });
+
+      input.placeholder = t('placeholder');
+
+      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+      document.getElementById('btnZh').classList.toggle('active', lang === 'zh');
+
+      render(); // refresh dynamic strings (subtitle, countLabel, empty state)
+    }
+
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('pan-lang', lang);
+      applyLang();
+    }
+
+    // ── API ────────────────────────────────────────────────────────────────
+    async function loadTasks() {
+      const res = await fetch('/api/tasks');
+      return res.json();
+    }
+
+    async function saveTasks() {
+      await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todos)
+      });
+    }
+
+    // ── Task operations ────────────────────────────────────────────────────
+    async function addTask() {
+      const text = input.value.trim();
+      if (!text) return;
+      todos.unshift({ id: Date.now(), text, done: false });
+      input.value = '';
+      render();
+      await saveTasks();
+    }
+
+    async function toggle(id) {
+      const task = todos.find(t => t.id === id);
+      if (task) task.done = !task.done;
+      render();
+      await saveTasks();
+    }
+
+    async function remove(id) {
+      todos = todos.filter(t => t.id !== id);
+      render();
+      await saveTasks();
+    }
+
+    async function clearDone() {
+      todos = todos.filter(t => !t.done);
+      render();
+      await saveTasks();
+    }
+
+    function setFilter(f, btn) {
+      filter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    // ── Render ─────────────────────────────────────────────────────────────
+    function render() {
+      const visible = todos.filter(task =>
+        filter === 'all'    ? true :
+        filter === 'active' ? !task.done : task.done
+      );
+
+      const active = todos.filter(task => !task.done).length;
+      document.getElementById('subtitle').textContent =
+        active === 0 ? t('allDone') : t('remaining', active);
+      document.getElementById('countLabel').textContent = t('total', todos.length);
+
+      if (visible.length === 0) {
+        list.innerHTML = `<li class="empty">${filter === 'done' ? t('emptyDone') : t('emptyAll')}</li>`;
+        return;
+      }
+
+      list.innerHTML = visible.map(task => `
+        <li class="todo-item ${task.done ? 'done' : ''}" data-id="${task.id}">
+          <div class="todo-check ${task.done ? 'checked' : ''}" onclick="toggle(${task.id})"></div>
+          <span class="todo-text">${escHtml(task.text)}</span>
+          <button class="btn-delete" onclick="remove(${task.id})" title="${t('deleteTitle')}">✕</button>
+        </li>
+      `).join('');
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    applyTheme();
+    applyLang();
+    loadTasks().then(data => { todos = data; render(); });
+  </script>
+</body>
+</html>
