@@ -39,7 +39,15 @@ function parseCsv(text) {
 // ── Task helpers ─────────────────────────────────────────────────────────────
 function readTasks() {
   if (!fs.existsSync(JSON_PATH)) return [];
-  return JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
+  try {
+    const content = fs.readFileSync(JSON_PATH, 'utf8').trim();
+    if (!content) return [];
+    return JSON.parse(content);
+  } catch {
+    console.warn('tasks.json is corrupt or empty — resetting to []');
+    fs.writeFileSync(JSON_PATH, '[]', 'utf8');
+    return [];
+  }
 }
 
 function writeTasks(tasks) {
