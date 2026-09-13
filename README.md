@@ -1,6 +1,6 @@
 # Vide Learning — Todo App
 
-A clean, corporate-styled task manager built with vanilla HTML/CSS/JS and a Node.js backend. Inspired by the Palo Alto Networks design language.
+A clean, modern task manager built with vanilla HTML/CSS/JS and a Node.js backend. No frameworks, no dependencies — just Node.js built-ins.
 
 ---
 
@@ -111,7 +111,7 @@ Old 3-column rows (without priority/category) are loaded with those fields defau
 - **Frontend** — Vanilla HTML, CSS (custom properties for theming), JavaScript (no frameworks)
 - **Backend** — Node.js built-in `http`, `fs`, `path` modules only
 - **Storage** — CSV file for tasks, JSON file for categories
-- **Design** — Palo Alto Networks corporate palette (`#003087` navy, `#FA582D` orange)
+- **Design** — Navy (`#003087`) and orange (`#FA582D`) color palette with CSS custom properties for theming
 
 ---
 

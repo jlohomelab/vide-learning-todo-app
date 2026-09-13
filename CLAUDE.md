@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A learning project for exploring web development fundamentals and Claude Code workflows. A todo list app with a Node.js backend, persistent CSV storage, and a Palo Alto Networks corporate UI.
+A learning project for exploring web development fundamentals and Claude Code workflows. A todo list app with a Node.js backend and persistent CSV storage.
 
 ## Project Structure
 
@@ -86,7 +86,7 @@ A flat JSON array of category name strings, stored server-side so all browsers a
 
 - Vanilla HTML, CSS, JavaScript — no frameworks or build tools
 - Node.js built-in modules only — no external dependencies
-- Palo Alto Networks corporate color palette (`#003087` blue, `#FA582D` orange)
+- Navy (`#003087`) and orange (`#FA582D`) color palette with CSS custom properties for theming
 
 ## Git Branches
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Todo — Palo Alto Networks</title>
+  <title>Todo App</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -502,11 +502,11 @@
 
   <nav class="topbar">
     <div class="topbar-logo">
-      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 0C7 4 4 7 4 11c0 3.9 3.1 7 7 7s7-3.1 7-7c0-4-3-7-7-11z" fill="#FA582D"/>
-        <path d="M11 8c-1.5 2-2.5 3.5-2.5 5 0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5C13.5 11.5 12.5 10 11 8z" fill="#fff" opacity=".85"/>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="10" stroke="rgba(255,255,255,.7)" stroke-width="1.5" fill="rgba(255,255,255,.12)"/>
+        <path d="M6.5 11l3 3L15.5 8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="topbar-brand">Palo Alto Networks</span>
+      <span class="topbar-brand">Todo App</span>
     </div>
     <div class="topbar-divider"></div>
     <span class="topbar-app" data-i18n="appName">Task Manager</span>
@@ -582,7 +582,7 @@
     // ── Translations ───────────────────────────────────────────────────────
     const I18N = {
       en: {
-        title:           'Todo — Palo Alto Networks',
+        title:           'Todo App',
         appName:         'Task Manager',
         heading:         'My Tasks',
         allDone:         'All caught up!',
@@ -608,7 +608,7 @@
         addCategory:     'Add category',
       },
       zh: {
-        title:           '待辦事項 — Palo Alto Networks',
+        title:           '待辦事項',
         appName:         '任務管理員',
         heading:         '我的任務',
         allDone:         '所有任務已完成！',
